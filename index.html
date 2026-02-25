@@ -3,268 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cute Ministore</title>
-    
+    <title>Ministore</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Kanit', 'sans-serif'] },
-                    colors: { pastel: { 50: '#fff0f5', 100: '#ffe4e1', 300: '#ffb6c1', 400: '#ff69b4', 500: '#ff1493', 600: '#d1498b' } },
-                    animation: { 'bounce-slow': 'bounce 3s infinite', 'fade-in': 'fadeIn 0.5s ease-out' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                    colors: { pastel: { 50: '#fff0f5', 100: '#ffe4e1', 300: '#ffb6c1', 400: '#ff69b4', 500: '#ff1493', 600: '#d1498b' } }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Kanit', sans-serif; background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%); min-height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 8px 32px rgba(255, 105, 180, 0.1); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 105, 180, 0.2); }
-        .swal2-popup { border-radius: 24px !important; background: #fff0f5 !important; border: 2px solid #ffb6c1; }
+        body { font-family: 'Kanit', sans-serif; background-color: #fff0f5; min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .admin-tab-active { background-color: #ff69b4; color: white; }
+        .admin-tab-inactive { background-color: #ffe4e1; color: #d1498b; }
     </style>
 </head>
 <body class="text-gray-700 flex flex-col">
 
-    <nav class="glass sticky top-0 z-40 rounded-b-3xl mx-2 mt-2">
+    <nav class="glass sticky top-0 z-40 mb-4">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('home')">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pastel-400 to-pastel-300 flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-store"></i>
-                </div>
-                <span class="text-xl font-semibold text-pastel-600 tracking-wide">MiniStore</span>
+                <i class="fa-solid fa-store text-pastel-500 text-2xl"></i>
+                <span class="text-xl font-semibold text-pastel-600">MiniStore</span>
             </div>
             
             <div class="flex items-center gap-4">
-                <div id="user-info" class="hidden text-right animate-fade-in">
+                <div id="user-info" class="hidden text-right">
                     <div class="text-sm font-medium text-pastel-600"><i class="fa-solid fa-user mr-1"></i> <span id="display-user"></span></div>
-                    <div class="text-xs text-gray-500 bg-white px-2 py-0.5 rounded-full shadow-sm mt-1">
-                        <i class="fa-solid fa-coins text-yellow-400 mr-1"></i> <span id="display-balance" class="font-bold">0.00</span> ฿
+                    <div class="text-xs text-gray-500 bg-white px-2 py-0.5 rounded-full shadow-sm">
+                        <i class="fa-solid fa-coins text-yellow-500 mr-1"></i> <span id="display-balance" class="font-bold">0.00</span> ฿
                     </div>
                 </div>
-                <button id="btn-login-nav" onclick="openModal('login-modal')" class="bg-gradient-to-r from-pastel-400 to-pastel-500 hover:from-pastel-500 hover:to-pastel-600 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg card-hover">
-                    <i class="fa-solid fa-right-to-bracket"></i> ล็อกอิน
+                <button id="btn-login-nav" onclick="openModal('login-modal')" class="bg-pastel-400 hover:bg-pastel-500 text-white px-4 py-2 rounded-full text-sm font-medium transition shadow">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
                 </button>
-                <button id="btn-admin-nav" onclick="navigate('admin')" class="hidden bg-gray-800 hover:bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg card-hover">
+                <button id="btn-admin-nav" onclick="navigate('admin')" class="hidden bg-gray-800 hover:bg-gray-900 text-white px-3 py-2 rounded-full transition shadow">
                     <i class="fa-solid fa-gear"></i>
                 </button>
-                <button onclick="toggleMenu()" class="text-pastel-500 text-2xl hover:scale-110 transition focus:outline-none">
-                    <i class="fa-solid fa-bars-staggered"></i>
+                <button onclick="toggleMenu()" class="text-pastel-500 text-2xl focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 glass shadow-2xl transform translate-x-full transition-transform duration-400 ease-in-out z-50 rounded-l-3xl">
-        <div class="p-5 flex justify-between items-center border-b border-pastel-300/30">
-            <h2 class="text-lg font-semibold text-pastel-600"><i class="fa-solid fa-compass mr-2"></i>เมนู</h2>
-            <button onclick="toggleMenu()" class="text-pastel-400 hover:text-pastel-600 text-2xl transition"><i class="fa-solid fa-circle-xmark"></i></button>
+    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 glass shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-5 flex justify-between items-center border-b border-pastel-100">
+            <h2 class="text-lg font-semibold text-pastel-600"><i class="fa-solid fa-list mr-2"></i>เมนูหลัก</h2>
+            <button onclick="toggleMenu()" class="text-gray-400 hover:text-pastel-500 text-2xl"><i class="fa-solid fa-times"></i></button>
         </div>
-        <div class="p-4 flex flex-col gap-2 overflow-y-auto">
-            <button onclick="navigate('home')" class="text-left px-4 py-3 rounded-2xl hover:bg-white/50 transition font-medium"><i class="fa-solid fa-house w-6 text-pastel-500"></i> หน้าหลัก</button>
-            <button onclick="navigate('inbox')" class="text-left px-4 py-3 rounded-2xl hover:bg-white/50 transition font-medium"><i class="fa-solid fa-envelope w-6 text-pastel-500"></i> กล่องข้อความ</button>
-            <button onclick="navigate('products')" class="text-left px-4 py-3 rounded-2xl hover:bg-white/50 transition font-medium"><i class="fa-solid fa-gift w-6 text-pastel-500"></i> สินค้าทั้งหมด</button>
-            <button onclick="navigate('topup')" class="text-left px-4 py-3 rounded-2xl hover:bg-white/50 transition font-medium"><i class="fa-solid fa-wallet w-6 text-pastel-500"></i> เติมเครดิต</button>
-            <button onclick="navigate('contact')" class="text-left px-4 py-3 rounded-2xl hover:bg-white/50 transition font-medium"><i class="fa-solid fa-headset w-6 text-pastel-500"></i> ติดต่อเรา</button>
-            <div class="border-t my-2 border-pastel-300/30"></div>
-            <button id="btn-logout" onclick="logout()" class="hidden text-left px-4 py-3 rounded-2xl hover:bg-red-50 text-red-500 transition font-medium"><i class="fa-solid fa-right-from-bracket w-6"></i> ออกจากระบบ</button>
+        <div class="p-4 flex flex-col gap-2">
+            <button onclick="navigate('home')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-50 transition"><i class="fa-solid fa-house w-6 text-pastel-400"></i> หน้าหลัก</button>
+            <button onclick="navigate('admin')" id="menu-admin" class="hidden text-left px-4 py-3 rounded-xl hover:bg-pastel-50 transition"><i class="fa-solid fa-wrench w-6 text-pastel-400"></i> จัดการระบบ</button>
+            <div class="border-t my-2 border-pastel-100"></div>
+            <button id="btn-logout" onclick="logout()" class="hidden text-left px-4 py-3 rounded-xl hover:bg-red-50 text-red-500 transition"><i class="fa-solid fa-right-from-bracket w-6"></i> ออกจากระบบ</button>
         </div>
     </div>
 
-    <main class="flex-grow max-w-6xl mx-auto w-full p-4 relative mt-2">
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 relative">
         
-        <div id="view-home" class="view-section animate-fade-in">
-            <div class="w-full h-48 md:h-80 rounded-3xl overflow-hidden shadow-lg relative mb-8 group">
-                <img id="banner-img" src="https://via.placeholder.com/1200x400/ffb6c1/ffffff?text=Welcome+to+Ministore" class="w-full h-full object-cover transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+        <div id="view-home" class="view-section">
+            <div class="w-full h-48 md:h-64 bg-pastel-300 rounded-3xl overflow-hidden shadow mb-8 flex items-center justify-center text-white">
+                <i class="fa-regular fa-image text-5xl mr-3"></i> <span class="text-2xl">พื้นที่แสดงแบนเนอร์</span>
             </div>
-
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl font-semibold text-pastel-600"><i class="fa-solid fa-star text-yellow-400 mr-2 animate-pulse"></i>สินค้าแนะนำ</h2>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="home-products">
-                <div class="text-center col-span-full py-10 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2 text-pastel-400"></i><br>กำลังโหลดสินค้า...</div>
+            <div class="text-center py-10 text-gray-500 glass rounded-2xl">
+                <i class="fa-solid fa-box-open text-4xl mb-3 text-pastel-400"></i><br>ระบบหน้าร้านพร้อมทำงาน<br>กรุณาตั้งค่าหลังบ้านเพื่อแสดงสินค้า
             </div>
         </div>
 
-        <div id="view-admin" class="view-section hidden animate-fade-in">
-            <h2 class="text-2xl font-semibold text-pastel-600 mb-4"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>จัดการระบบ (Admin)</h2>
+        <div id="view-admin" class="view-section hidden">
+            <h2 class="text-2xl font-semibold text-pastel-600 mb-6"><i class="fa-solid fa-shield-halved mr-2"></i>ระบบจัดการหลังบ้าน</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="font-medium text-lg mb-4 text-pastel-600"><i class="fa-solid fa-sliders"></i> ตั้งค่าเว็บไซต์</h3>
-                    <form onsubmit="saveAdminSettings(event)" class="space-y-3">
-                        <input type="text" id="set-storename" placeholder="ชื่อร้าน" class="w-full p-3 rounded-xl border border-pastel-100 bg-white/50 focus:bg-white outline-none transition">
-                        <textarea id="set-popup-desc" placeholder="ข้อความต้อนรับ Popup" class="w-full p-3 rounded-xl border border-pastel-100 bg-white/50 focus:bg-white outline-none transition"></textarea>
-                        <button type="submit" class="w-full bg-gray-800 text-white py-3 rounded-xl card-hover"><i class="fa-solid fa-save"></i> บันทึกการตั้งค่า</button>
-                    </form>
-                </div>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="switchAdminTab('setting')" id="tab-btn-setting" class="admin-tab-active px-4 py-2 rounded-lg font-medium transition"><i class="fa-solid fa-sliders mr-2"></i>ตั้งค่าเว็บ</button>
+                <button onclick="switchAdminTab('manual')" id="tab-btn-manual" class="admin-tab-inactive px-4 py-2 rounded-lg font-medium transition"><i class="fa-solid fa-box-medical mr-2"></i>ระบบเพิ่มสินค้า</button>
+                <button onclick="switchAdminTab('api')" id="tab-btn-api" class="admin-tab-inactive px-4 py-2 rounded-lg font-medium transition"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>เพิ่มสินค้าจาก API</button>
+            </div>
 
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="font-medium text-lg mb-4 text-pastel-600"><i class="fa-solid fa-cloud-arrow-down"></i> ดึงสินค้าจาก API</h3>
-                    <div class="space-y-3">
-                        <select id="api-type" class="w-full p-3 rounded-xl border border-pastel-100 bg-white/50 outline-none">
-                            <option value="getpack">แอพพรีเมียม (getpack)</option>
-                            <option value="getgames">เติมเกม (getgames)</option>
-                            <option value="getotp">บริการ OTP (getotp)</option>
-                        </select>
-                        <button onclick="fetchApiProducts()" class="w-full bg-pastel-500 text-white py-3 rounded-xl hover:bg-pastel-600 transition shadow-md"><i class="fa-solid fa-search"></i> ค้นหาสินค้าจาก API</button>
+            <div id="admin-tab-setting" class="admin-content glass p-6 rounded-2xl">
+                <form onsubmit="saveWebSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-pastel-600 border-b pb-2"><i class="fa-solid fa-globe mr-2"></i>ข้อมูลเว็บไซต์</h3>
+                        <input type="text" id="cfg-name" placeholder="ชื่อร้าน" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <input type="text" id="cfg-logo" placeholder="URL โลโก้" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <input type="text" id="cfg-banner" placeholder="URL แบนเนอร์ (คั่นด้วยลูกน้ำ , )" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <input type="text" id="cfg-banner-link" placeholder="ลิงก์เชื่อมแบนเนอร์" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-pastel-600 border-b pb-2"><i class="fa-regular fa-window-restore mr-2"></i>ข้อมูล Popup</h3>
+                        <input type="text" id="cfg-pop-title" placeholder="หัวข้อ Popup" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <input type="text" id="cfg-pop-img" placeholder="รูป Popup URL" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <textarea id="cfg-pop-desc" placeholder="รายละเอียด Popup" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400"></textarea>
+                    </div>
+                    <div class="space-y-4 md:col-span-2">
+                        <h3 class="font-semibold text-pastel-600 border-b pb-2"><i class="fa-solid fa-address-book mr-2"></i>การติดต่อ & แจ้งเตือน</h3>
+                        <input type="text" id="cfg-admin-mail" placeholder="อีเมลแอดมิน (รับแจ้งเตือน) คั่นด้วย , หากมีหลายเมล" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="cfg-fb" placeholder="ลิงก์ Facebook" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                            <input type="text" id="cfg-line" placeholder="ลิงก์ Line" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                            <input type="text" id="cfg-page" placeholder="ลิงก์ Page" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                            <input type="text" id="cfg-contact-mail" placeholder="ลิงก์ Mail ติดต่อ" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 mt-4">
+                        <button type="submit" class="w-full bg-pastel-500 text-white py-3 rounded-lg hover:bg-pastel-600 transition"><i class="fa-solid fa-save mr-2"></i>บันทึกการตั้งค่า</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="admin-tab-manual" class="admin-content hidden glass p-6 rounded-2xl">
+                <form onsubmit="saveManualProduct(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-500 mb-1 block">หมวดหมู่</label>
+                            <select id="man-cat" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                                <option value="แอพพรีเมียม">แอพพรีเมียม</option>
+                                <option value="เติมเกม">เติมเกม</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500 mb-1 block">สถานะ</label>
+                            <select id="man-status" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                                <option value="เปิดขาย">เปิดขาย</option>
+                                <option value="ปิดขาย">ปิดขาย</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="text" id="man-name" required placeholder="ชื่อสินค้า" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                    <input type="number" id="man-price" required placeholder="ราคาขาย (บาท)" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                    <input type="text" id="man-img" required placeholder="URL รูปภาพสินค้า" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400">
+                    <textarea id="man-detail" placeholder="รายละเอียดสินค้า" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400"></textarea>
+                    <textarea id="man-more-detail" placeholder="รายละเอียดเพิ่มเติม" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400"></textarea>
+                    
+                    <div class="bg-white p-4 rounded-lg border border-pastel-100">
+                        <h4 class="font-medium text-pastel-600 mb-2"><i class="fa-solid fa-layer-group mr-2"></i>เพิ่มสต๊อกสินค้า (1 บรรทัด = 1 รหัสสินค้า)</h4>
+                        <textarea id="man-stock" rows="4" placeholder="รหัสที่ 1&#10;รหัสที่ 2&#10;รหัสที่ 3" class="w-full p-2 border rounded-lg outline-none focus:border-pastel-400 bg-gray-50"></textarea>
                     </div>
 
-                    <div id="api-results" class="mt-4 max-h-60 overflow-y-auto hide-scrollbar space-y-2"></div>
+                    <button type="submit" class="w-full bg-pastel-500 text-white py-3 rounded-lg hover:bg-pastel-600 transition"><i class="fa-solid fa-plus mr-2"></i>เพิ่มสินค้าเข้าระบบ</button>
+                </form>
+            </div>
+
+            <div id="admin-tab-api" class="admin-content hidden glass p-6 rounded-2xl">
+                <div class="flex gap-2 mb-4">
+                    <select id="api-type" class="flex-grow p-3 border rounded-lg outline-none focus:border-pastel-400">
+                        <option value="getpack">แอพพรีเมียม (getpack)</option>
+                        <option value="getgames">เติมเกม (getgames)</option>
+                        <option value="getotp">บริการ OTP (getotp)</option>
+                    </select>
+                    <button onclick="fetchApiData()" class="bg-gray-800 text-white px-6 rounded-lg hover:bg-gray-900 transition"><i class="fa-solid fa-magnifying-glass mr-2"></i>ดึงข้อมูล</button>
+                </div>
+                
+                <div id="api-result-box" class="space-y-3 max-h-96 overflow-y-auto hide-scrollbar bg-white/50 p-2 rounded-lg">
+                    <div class="text-center py-6 text-gray-400"><i class="fa-solid fa-cloud-arrow-down text-3xl mb-2"></i><br>กดปุ่มดึงข้อมูลเพื่อแสดงรายการสินค้าจาก API</div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </main>
 
-    <div id="login-modal" class="fixed inset-0 bg-black/30 z-50 hidden flex items-center justify-center backdrop-blur-sm transition-opacity">
-        <div class="glass p-8 rounded-[2rem] shadow-2xl w-full max-w-sm m-4 relative animate-fade-in border-2 border-white">
-            <button onclick="closeModal('login-modal')" class="absolute top-4 right-5 text-gray-400 hover:text-pastel-500 text-xl"><i class="fa-solid fa-times"></i></button>
-            <div class="text-center mb-6">
-                <div class="bg-gradient-to-br from-pastel-300 to-pastel-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-white text-2xl shadow-lg">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h2 class="text-2xl font-semibold text-gray-800">เข้าสู่ระบบ</h2>
-            </div>
+    <div id="login-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm m-4 relative border border-pastel-200">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-pastel-500"><i class="fa-solid fa-times text-xl"></i></button>
+            <div class="text-center mb-6 text-pastel-500 text-4xl"><i class="fa-solid fa-circle-user"></i></div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="text" id="login-id" required placeholder="UserID หรือ Email" class="w-full px-5 py-3 rounded-xl bg-white border border-pastel-100 focus:border-pastel-400 focus:ring-2 focus:ring-pastel-100 outline-none transition">
-                <input type="password" id="login-pass" required placeholder="รหัสผ่าน" class="w-full px-5 py-3 rounded-xl bg-white border border-pastel-100 focus:border-pastel-400 focus:ring-2 focus:ring-pastel-100 outline-none transition">
-                <button type="submit" class="w-full bg-gradient-to-r from-pastel-400 to-pastel-500 text-white font-medium py-3 rounded-xl hover:shadow-lg transition card-hover">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> ล็อกอินเลย!
-                </button>
+                <input type="text" id="login-id" required placeholder="ชื่อผู้ใช้ หรือ อีเมล" class="w-full px-4 py-3 rounded-lg border focus:border-pastel-400 outline-none">
+                <input type="password" id="login-pass" required placeholder="รหัสผ่าน" class="w-full px-4 py-3 rounded-lg border focus:border-pastel-400 outline-none">
+                <button type="submit" class="w-full bg-pastel-500 text-white py-3 rounded-lg hover:bg-pastel-600 transition"><i class="fa-solid fa-right-to-bracket mr-2"></i>เข้าสู่ระบบ</button>
             </form>
-            <p class="text-center mt-5 text-sm text-gray-500">ยังไม่มีบัญชี? <span onclick="closeModal('login-modal'); openModal('register-modal')" class="text-pastel-600 font-semibold cursor-pointer hover:underline">สมัครสมาชิก</span></p>
         </div>
     </div>
 
     <script>
-        // แก้ URL ให้ตรงกับที่คุณเพิ่ง Deploy ใหม่!
+        // เปลี่ยนเป็น URL ใหม่ของคุณ
         const GAS_URL = "Https://script.google.com/macros/s/AKfycbw7AEuvWdMRiQvmuHCAaP9lPIJoilujXixiJGMBFZJZqJSqyd8RfliMxgDSeIlK7wQb/exec";
         let currentUser = JSON.parse(localStorage.getItem('user_session')) || null;
 
-        // UI Functions
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('translate-x-full'); }
         function showView(id) { document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden')); document.getElementById('view-' + id).classList.remove('hidden'); }
         function navigate(id) { toggleMenu(); showView(id); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // Core Fetching (แก้บัค CORS โดยใช้ text/plain)
         async function fetchGAS(payload) {
             try {
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // สำคัญมาก แก้บัค Login ค้าง!
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // กันบัค CORS
                     body: JSON.stringify(payload)
                 });
                 return await response.json();
             } catch (error) {
                 console.error(error);
-                return { status: 'error', message: 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่' };
+                return { status: 'error', message: 'เกิดข้อผิดพลาดในการเชื่อมต่อ' };
             }
         }
 
-        // --- ระบบ Login ---
+        // --- Auth ---
         async function handleLogin(e) {
             e.preventDefault();
-            const loginId = document.getElementById('login-id').value.trim();
-            const password = document.getElementById('login-pass').value.trim();
-
-            Swal.fire({ title: 'กำลังเข้าระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            
-            const res = await fetchGAS({ action: 'login', loginId, password });
+            Swal.fire({ title: 'กำลังโหลด...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+            const res = await fetchGAS({ 
+                action: 'login', 
+                loginId: document.getElementById('login-id').value, 
+                password: document.getElementById('login-pass').value 
+            });
             
             if(res.status === 'success') {
                 currentUser = res.user;
                 localStorage.setItem('user_session', JSON.stringify(currentUser));
                 closeModal('login-modal');
                 updateUI();
-                Swal.fire({ title: 'สำเร็จ!', text: 'ยินดีต้อนรับกลับมาค่ะ 💖', icon: 'success', confirmButtonColor: '#ff69b4' });
+                Swal.fire('สำเร็จ', 'เข้าสู่ระบบแล้ว', 'success');
             } else {
-                Swal.fire('อุ๊ย!', res.message, 'error');
-            }
-        }
-
-        function updateUI() {
-            if(currentUser) {
-                document.getElementById('btn-login-nav').classList.add('hidden');
-                document.getElementById('user-info').classList.remove('hidden');
-                document.getElementById('display-user').innerText = currentUser.userid;
-                document.getElementById('display-balance').innerText = parseFloat(currentUser.balance).toFixed(2);
-                document.getElementById('btn-logout').classList.remove('hidden');
-                if(currentUser.role === 'admin') document.getElementById('btn-admin-nav').classList.remove('hidden');
-            } else {
-                document.getElementById('btn-login-nav').classList.remove('hidden');
-                document.getElementById('user-info').classList.add('hidden');
-                document.getElementById('btn-logout').classList.add('hidden');
-                document.getElementById('btn-admin-nav').classList.add('hidden');
-            }
-        }
-
-        // --- ระบบ Admin ดึง API ---
-        async function fetchApiProducts() {
-            const actionType = document.getElementById('api-type').value;
-            Swal.fire({ title: 'กำลังดึงข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            const res = await fetchGAS({ action: 'fetchAPI', path: actionType });
-            Swal.close();
-
-            const container = document.getElementById('api-results');
-            container.innerHTML = '';
-
-            if(res && res.length > 0) {
-                res.forEach(item => {
-                    const price = item.price || item.price_ori || 0;
-                    const name = item.name || item.app || 'ไม่ทราบชื่อ';
-                    const img = item.img || item.img_icon || 'https://via.placeholder.com/50';
-                    
-                    container.innerHTML += `
-                        <div class="bg-white p-3 rounded-xl flex justify-between items-center shadow-sm border border-pastel-50">
-                            <div class="flex items-center gap-3">
-                                <img src="${img}" class="w-10 h-10 rounded-lg object-cover">
-                                <div>
-                                    <div class="text-sm font-semibold line-clamp-1">${name}</div>
-                                    <div class="text-xs text-pastel-500">ต้นทุน: ${price} ฿</div>
-                                </div>
-                            </div>
-                            <button onclick="addApiToShop('${name}', ${price}, '${img}', '${item.type_code || item.type}')" class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs hover:bg-green-200 transition"><i class="fa-solid fa-plus"></i> เพิ่มขาย</button>
-                        </div>
-                    `;
-                });
-            } else {
-                container.innerHTML = '<div class="text-center text-gray-400 text-sm mt-4">ไม่พบข้อมูล หรือ API ไม่ตอบสนอง</div>';
-            }
-        }
-
-        // นำสินค้า API เข้าสู่ระบบร้านค้าเรา
-        async function addApiToShop(name, cost, img, typeCode) {
-            const { value: sellPrice } = await Swal.fire({
-                title: 'ตั้งราคาขาย',
-                text: `ต้นทุนสินค้า: ${cost} ฿`,
-                input: 'number',
-                inputPlaceholder: 'ใส่ราคาขายของคุณที่นี่...',
-                confirmButtonColor: '#ff69b4',
-                showCancelButton: true
-            });
-
-            if (sellPrice) {
-                Swal.fire({ title: 'กำลังบันทึกลงชีต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                const res = await fetchGAS({
-                    action: 'adminAddProduct',
-                    product: { name: name, price: sellPrice, img: img, category: 'API', type_code: typeCode, details: 'สินค้าอัตโนมัติ', type: 'api' }
-                });
-                if(res.status === 'success') {
-                    Swal.fire('สำเร็จ!', 'เพิ่มสินค้าลงหน้าร้านแล้ว', 'success');
-                }
+                Swal.fire('ข้อผิดพลาด', res.message, 'error');
             }
         }
 
@@ -275,7 +236,113 @@
             navigate('home');
         }
 
-        window.onload = () => { updateUI(); };
+        function updateUI() {
+            if(currentUser) {
+                document.getElementById('btn-login-nav').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('display-user').innerText = currentUser.userid;
+                document.getElementById('display-balance').innerText = parseFloat(currentUser.balance).toFixed(2);
+                document.getElementById('btn-logout').classList.remove('hidden');
+                
+                if(currentUser.role === 'admin') {
+                    document.getElementById('btn-admin-nav').classList.remove('hidden');
+                    document.getElementById('menu-admin').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('btn-login-nav').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('btn-logout').classList.add('hidden');
+                document.getElementById('btn-admin-nav').classList.add('hidden');
+                document.getElementById('menu-admin').classList.add('hidden');
+            }
+        }
+
+        // --- Admin Tabs ---
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('admin-tab-' + tabName).classList.remove('hidden');
+            
+            ['setting', 'manual', 'api'].forEach(t => {
+                const btn = document.getElementById('tab-btn-' + t);
+                if(t === tabName) {
+                    btn.className = 'admin-tab-active px-4 py-2 rounded-lg font-medium transition shadow';
+                } else {
+                    btn.className = 'admin-tab-inactive px-4 py-2 rounded-lg font-medium transition';
+                }
+            });
+        }
+
+        // --- Admin Fetch API ---
+        async function fetchApiData() {
+            const path = document.getElementById('api-type').value;
+            Swal.fire({ title: 'กำลังดึงข้อมูล API...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+            
+            const res = await fetchGAS({ action: 'fetchAPI', path: path });
+            Swal.close();
+            
+            const box = document.getElementById('api-result-box');
+            box.innerHTML = '';
+
+            if(res.status === 'success' && res.data) {
+                // ข้อมูลอาจจะเป็น Array โดยตรง หรืออยู่ในตัวแปรบางอย่าง ขึ้นอยู่กับ API
+                let items = Array.isArray(res.data) ? res.data : (res.data.data || []); 
+                
+                if(items.length === 0) {
+                    box.innerHTML = '<div class="text-center py-4 text-red-500"><i class="fa-solid fa-triangle-exclamation mr-2"></i>ไม่พบข้อมูลจาก API นี้ หรือรูปแบบข้อมูลไม่ตรงกัน</div>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const name = item.name || item.app || item.namegame || 'ไม่ระบุชื่อ';
+                    const price = item.price || item.price_ori || 0;
+                    const img = item.img || item.img_icon || 'https://via.placeholder.com/50';
+                    const typeCode = item.type_code || item.type || item.type_game || 'N/A';
+                    
+                    box.innerHTML += `
+                        <div class="bg-white border p-3 rounded-xl flex justify-between items-center hover:shadow-md transition">
+                            <div class="flex items-center gap-3">
+                                <img src="${img}" class="w-12 h-12 rounded object-cover border">
+                                <div>
+                                    <div class="font-medium text-gray-800 line-clamp-1">${name}</div>
+                                    <div class="text-xs text-gray-500">ต้นทุน API: <span class="text-red-500 font-bold">${price} ฿</span> | รหัส: ${typeCode}</div>
+                                </div>
+                            </div>
+                            <button onclick="saveApiProduct('${name}', ${price}, '${img}', '${typeCode}', '${path}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-600 transition whitespace-nowrap"><i class="fa-solid fa-plus mr-1"></i> เพิ่มขาย</button>
+                        </div>
+                    `;
+                });
+            } else {
+                box.innerHTML = `<div class="text-center py-4 text-red-500"><i class="fa-solid fa-xmark mr-2"></i>ไม่พบ API หรือเชื่อมต่อล้มเหลว<br><span class="text-xs text-gray-400">${res.message || ''}</span></div>`;
+            }
+        }
+
+        async function saveApiProduct(name, costPrice, img, typeCode, apiSource) {
+            const { value: sellPrice } = await Swal.fire({
+                title: 'ตั้งราคาขาย',
+                html: `สินค้า: <b>${name}</b><br>ต้นทุน: <b class="text-red-500">${costPrice} ฿</b>`,
+                input: 'number',
+                inputPlaceholder: 'กรอกราคาขาย (บาท)',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-save"></i> บันทึก',
+                confirmButtonColor: '#ff69b4'
+            });
+
+            if(sellPrice) {
+                Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+                const payload = {
+                    action: 'adminAddProduct',
+                    product: { 
+                        name: name, price: sellPrice, img: img, cost: costPrice, 
+                        category: apiSource === 'getgames' ? 'เติมเกม' : 'แอพพรีเมียม', 
+                        type: 'api', type_code: typeCode, status: 'เปิดขาย'
+                    }
+                };
+                const res = await fetchGAS(payload);
+                if(res.status === 'success') Swal.fire('สำเร็จ', 'เพิ่มสินค้า API เรียบร้อย', 'success');
+            }
+        }
+
+        window.onload = () => updateUI();
     </script>
 </body>
 </html>
