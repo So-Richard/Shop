@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Ministore</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: {
+                        pastel: {
+                            50: '#fff0f5', // light pink background
+                            100: '#ffe4e1',
+                            300: '#ffb6c1',
+                            400: '#ff69b4', // primary pink
+                            500: '#ff1493',
+                            600: '#d1498b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #fff0f5; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animation สำหรับแบนเนอร์ */
+        .fade-transition { transition: opacity 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="text-gray-700 min-h-screen flex flex-col">
+
+    <nav class="glass-panel sticky top-0 z-40 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('home')">
+                <img id="nav-logo" src="https://via.placeholder.com/50" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-pastel-400">
+                <span id="nav-title" class="text-xl font-semibold text-pastel-600">MiniStore</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div id="user-info" class="hidden text-right">
+                    <div class="text-sm font-medium text-pastel-600"><i class="fa-solid fa-user mr-1"></i> <span id="display-user">User</span></div>
+                    <div class="text-xs text-gray-500"><i class="fa-solid fa-coins text-yellow-400 mr-1"></i> <span id="display-balance">0.00</span> ฿</div>
+                </div>
+                <button id="btn-login-nav" onclick="openModal('login-modal')" class="bg-pastel-400 hover:bg-pastel-500 text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-md">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
+                </button>
+                <button id="btn-admin-nav" onclick="showView('admin')" class="hidden bg-gray-800 hover:bg-gray-900 text-white px-3 py-2 rounded-full text-sm transition shadow-md">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <button onclick="toggleMenu()" class="text-pastel-600 text-2xl focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 glass-panel shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-5 flex justify-between items-center border-b border-pastel-100">
+            <h2 class="text-lg font-semibold text-pastel-600"><i class="fa-solid fa-compass mr-2"></i>เมนูหลัก</h2>
+            <button onclick="toggleMenu()" class="text-gray-400 hover:text-pastel-500 text-xl"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="p-4 flex flex-col gap-2">
+            <button onclick="navigate('home')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-house w-6 text-pastel-500"></i> หน้าหลัก</button>
+            <button onclick="navigate('inbox')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-envelope w-6 text-pastel-500"></i> กล่องข้อความ</button>
+            <button onclick="navigate('products')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-store w-6 text-pastel-500"></i> สินค้าทั้งหมด</button>
+            <button onclick="navigate('topup')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-wallet w-6 text-pastel-500"></i> เติมเครดิต</button>
+            <button onclick="navigate('shortlink')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-link w-6 text-pastel-500"></i> ย่อลิงก์</button>
+            <button onclick="navigate('contact')" class="text-left px-4 py-3 rounded-xl hover:bg-pastel-100 transition"><i class="fa-solid fa-headset w-6 text-pastel-500"></i> ติดต่อเรา</button>
+            <div class="border-t my-2 border-pastel-100"></div>
+            <button id="btn-logout" onclick="logout()" class="hidden text-left px-4 py-3 rounded-xl hover:bg-red-50 text-red-500 transition"><i class="fa-solid fa-right-from-bracket w-6"></i> ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <div class="bg-pastel-400 text-white text-sm py-2 px-4 flex items-center shadow-inner">
+        <i class="fa-solid fa-bullhorn mr-3"></i>
+        <marquee class="font-light" behavior="scroll" direction="left" id="marquee-text">
+            ยินดีต้อนรับสู่ร้านค้าของเรา! โปรโมชั่นพิเศษวันนี้ สมัครสมาชิกใหม่รับสิทธิพิเศษทันที...
+        </marquee>
+    </div>
+
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 relative">
+        
+        <div id="view-home" class="view-section">
+            <div class="w-full h-48 md:h-72 bg-pastel-100 rounded-3xl overflow-hidden shadow-md relative mb-8">
+                <img id="banner-img" src="https://via.placeholder.com/1200x400" alt="Banner" class="w-full h-full object-cover fade-transition">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-pastel-600"><i class="fa-solid fa-fire text-orange-400 mr-2"></i>สินค้าแนะนำ</h2>
+                <span class="text-sm text-gray-400 bg-white px-3 py-1 rounded-full shadow-sm"><i class="fa-solid fa-info-circle"></i> ล็อกอินเพื่อดูทั้งหมด</span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="home-products">
+                <div class="glass-panel p-3 rounded-2xl shadow hover:shadow-lg transition">
+                    <img src="https://via.placeholder.com/200" class="w-full h-32 object-cover rounded-xl mb-3">
+                    <h3 class="font-medium text-gray-800 line-clamp-1">Netflix Premium</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-pastel-600 font-bold">100 ฿</span>
+                        <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full"><i class="fa-solid fa-check"></i> พร้อมส่ง</span>
+                    </div>
+                    <button onclick="requireLoginAlert()" class="w-full mt-3 bg-pastel-400 text-white py-1.5 rounded-xl text-sm hover:bg-pastel-500 transition"><i class="fa-solid fa-cart-shopping"></i> สั่งซื้อ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-topup" class="view-section hidden max-w-md mx-auto">
+            <div class="glass-panel p-6 rounded-3xl shadow-lg text-center">
+                <h2 class="text-2xl font-semibold text-pastel-600 mb-2"><i class="fa-solid fa-wallet mr-2"></i>เติมเครดิต</h2>
+                <p class="text-sm text-gray-500 mb-6">สแกน QR Code เพื่อโอนเงิน และอัปโหลดสลิป</p>
+                
+                <img id="qr-code-img" src="https://via.placeholder.com/250" class="w-48 h-48 mx-auto rounded-2xl shadow-sm mb-4 border-4 border-pastel-100">
+                
+                <form id="topup-form" onsubmit="handleTopup(event)" class="text-left space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนเงิน (บาท)</label>
+                        <input type="number" id="topup-amount" required class="w-full px-4 py-2 rounded-xl border-2 border-pastel-100 focus:border-pastel-400 focus:ring-0 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">เลขท้ายสลิป 6 หลัก (A-Z, 0-9)</label>
+                        <input type="text" id="topup-last6" pattern="^[A-Za-z0-9]{6}$" maxlength="6" required placeholder="เช่น 12AB56" class="w-full px-4 py-2 rounded-xl border-2 border-pastel-100 focus:border-pastel-400 focus:ring-0 outline-none transition uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">อัปโหลดรูปสลิป</label>
+                        <input type="file" id="topup-slip" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-pastel-50 file:text-pastel-600 hover:file:bg-pastel-100 cursor-pointer">
+                    </div>
+                    <button type="submit" class="w-full bg-pastel-500 text-white font-medium py-3 rounded-xl hover:bg-pastel-600 transition shadow-md mt-4">
+                        <i class="fa-solid fa-paper-plane mr-2"></i>แจ้งโอนเงิน
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-inbox" class="view-section hidden max-w-2xl mx-auto">
+            <h2 class="text-2xl font-semibold text-pastel-600 mb-4"><i class="fa-solid fa-envelope-open-text mr-2"></i>กล่องข้อความของฉัน</h2>
+            <div id="inbox-container" class="space-y-3">
+                <div class="text-center text-gray-400 py-10 glass-panel rounded-2xl"><i class="fa-solid fa-box-open text-4xl mb-2"></i><br>ยังไม่มีข้อความหรือสินค้า</div>
+            </div>
+        </div>
+
+        <div id="view-admin" class="view-section hidden">
+            <h2 class="text-2xl font-semibold text-pastel-600 mb-4"><i class="fa-solid fa-shield-halved mr-2"></i>ระบบจัดการหลังบ้าน (Admin)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-5 rounded-3xl shadow">
+                    <h3 class="font-medium text-lg mb-3"><i class="fa-solid fa-image"></i> ตั้งค่าทั่วไป</h3>
+                    <form onsubmit="saveAdminSettings(event)" class="space-y-3">
+                        <input type="text" id="set-storename" placeholder="ชื่อร้าน" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <input type="text" id="set-logo" placeholder="URL โลโก้" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <input type="text" id="set-banner" placeholder="URL แบนเนอร์ (คั่นด้วย , ถ้ามีหลายรูป)" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <input type="text" id="set-popup-title" placeholder="หัวข้อ Popup" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <textarea id="set-popup-desc" placeholder="รายละเอียด Popup" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400"></textarea>
+                        <button type="submit" class="w-full bg-pastel-600 text-white py-2 rounded-xl"><i class="fa-solid fa-save"></i> บันทึกการตั้งค่า</button>
+                    </form>
+                </div>
+                <div class="glass-panel p-5 rounded-3xl shadow">
+                    <h3 class="font-medium text-lg mb-3"><i class="fa-solid fa-box-medical"></i> เพิ่มสินค้า</h3>
+                    <form onsubmit="adminAddProduct(event)" class="space-y-3">
+                        <select id="prod-cat" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                            <option value="แอพพรีเมียม">แอพพรีเมียม</option>
+                            <option value="เติมเกม">เติมเกม</option>
+                            <option value="API">ดึงจาก API</option>
+                        </select>
+                        <input type="text" id="prod-name" placeholder="ชื่อสินค้า" required class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <input type="number" id="prod-price" placeholder="ราคา (บาท)" required class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <input type="text" id="prod-img" placeholder="URL รูปภาพ" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400">
+                        <textarea id="prod-details" placeholder="รายละเอียดสินค้า" class="w-full p-2 rounded-xl border outline-none focus:border-pastel-400"></textarea>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded-xl"><i class="fa-solid fa-plus"></i> เพิ่มสินค้า</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-pastel-100 py-6 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <div class="flex justify-center gap-4 mb-4 text-xl text-pastel-400">
+                <a href="#" class="hover:text-pastel-600 transition"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-pastel-600 transition"><i class="fa-brands fa-line"></i></a>
+                <a href="#" class="hover:text-pastel-600 transition"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+            <p class="text-sm text-gray-500">&copy; 2024 <span id="footer-name">Ministore</span>. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div id="login-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-3xl shadow-xl w-full max-w-sm m-4 relative animate-fade">
+            <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-pastel-500"><i class="fa-solid fa-times text-xl"></i></button>
+            <div class="text-center mb-6">
+                <div class="bg-pastel-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-pastel-500 text-2xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="text-2xl font-semibold text-gray-800">เข้าสู่ระบบ</h2>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <input type="text" id="login-id" required placeholder="UserID หรือ Email" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-pastel-400 focus:ring-2 focus:ring-pastel-100 outline-none transition">
+                </div>
+                <div>
+                    <input type="password" id="login-pass" required placeholder="รหัสผ่าน" class="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-pastel-400 focus:ring-2 focus:ring-pastel-100 outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-pastel-500 text-white font-medium py-3 rounded-xl hover:bg-pastel-600 transition shadow-md">ล็อกอิน</button>
+            </form>
+            <p class="text-center mt-4 text-sm text-gray-500">ยังไม่มีบัญชี? <span onclick="closeModal('login-modal'); openModal('register-modal')" class="text-pastel-600 font-medium cursor-pointer hover:underline">สมัครสมาชิก</span></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-3xl shadow-xl w-full max-w-sm m-4 relative animate-fade">
+            <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-pastel-500"><i class="fa-solid fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6"><i class="fa-solid fa-user-plus text-pastel-400 mr-2"></i>สมัครสมาชิก</h2>
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <input type="text" id="reg-id" required placeholder="UserID (ชื่อผู้ใช้)" class="w-full px-4 py-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-pastel-200">
+                <input type="email" id="reg-email" required placeholder="Email" class="w-full px-4 py-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-pastel-200">
+                <input type="password" id="reg-pass" required placeholder="รหัสผ่าน" class="w-full px-4 py-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-pastel-200">
+                <input type="password" id="reg-confirm" required placeholder="ยืนยันรหัสผ่าน" class="w-full px-4 py-3 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-pastel-200">
+                <button type="submit" class="w-full bg-pastel-500 text-white font-medium py-3 rounded-xl hover:bg-pastel-600 transition shadow-md">ยืนยันสมัครสมาชิก</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. การตั้งค่าระบบ (Config) ---
+        const GAS_URL = "Https://script.google.com/macros/s/AKfycbw7AEuvWdMRiQvmuHCAaP9lPIJoilujXixiJGMBFZJZqJSqyd8RfliMxgDSeIlK7wQb/exec";
+        let currentUser = JSON.parse(localStorage.getItem('user_session')) || null;
+        let isProcessing = false;
+        let banners = [];
+        let bannerIndex = 0;
+
+        // --- 2. ฟังก์ชันอำนวยความสะดวก UI ---
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+        }
+
+        function navigate(viewId) {
+            toggleMenu(); // ปิดเมนู
+            if (!currentUser && viewId !== 'home' && viewId !== 'contact') {
+                requireLoginAlert();
+                return;
+            }
+            showView(viewId);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function requireLoginAlert() {
+            Swal.fire({
+                title: 'กรุณาเข้าสู่ระบบ',
+                text: 'คุณต้องเข้าสู่ระบบก่อนเพื่อใช้งานฟังก์ชันนี้ค่ะ',
+                icon: 'warning',
+                iconColor: '#ff69b4',
+                confirmButtonText: '<i class="fa-solid fa-right-to-bracket"></i> ไปหน้าล็อกอิน',
+                confirmButtonColor: '#ff69b4',
+                showCancelButton: true,
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if(result.isConfirmed) openModal('login-modal');
+            });
+        }
+
+        function showLoading() {
+            if(isProcessing) return false;
+            isProcessing = true;
+            Swal.fire({
+                title: 'กำลังประมวลผล...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            return true;
+        }
+
+        function hideLoading() {
+            isProcessing = false;
+            Swal.close();
+        }
+
+        // --- 3. การเชื่อมต่อ API แบบ Fetch ---
+        async function fetchGAS(payload) {
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("Error Fetch:", error);
+                return { status: 'error', message: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้' };
+            }
+        }
+
+        // --- 4. ระบบ Auth (Login, Register, Logout) ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            if(!showLoading()) return;
+
+            const loginId = document.getElementById('login-id').value;
+            const password = document.getElementById('login-pass').value;
+
+            const res = await fetchGAS({ action: 'login', loginId, password });
+            hideLoading();
+
+            if(res.status === 'success') {
+                currentUser = res.user;
+                localStorage.setItem('user_session', JSON.stringify(currentUser));
+                closeModal('login-modal');
+                updateUI();
+                Swal.fire({ title: 'สำเร็จ!', text: 'เข้าสู่ระบบเรียบร้อย', icon: 'success', confirmButtonColor: '#ff69b4' });
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message, 'error');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const pass = document.getElementById('reg-pass').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            if(pass !== confirm) {
+                Swal.fire('ข้อผิดพลาด', 'รหัสผ่านไม่ตรงกัน', 'warning');
+                return;
+            }
+
+            if(!showLoading()) return;
+            const payload = {
+                action: 'register',
+                userid: document.getElementById('reg-id').value,
+                email: document.getElementById('reg-email').value,
+                password: pass
+            };
+
+            const res = await fetchGAS(payload);
+            hideLoading();
+
+            if(res.status === 'success') {
+                currentUser = res.user;
+                localStorage.setItem('user_session', JSON.stringify(currentUser));
+                closeModal('register-modal');
+                updateUI();
+                Swal.fire({ title: 'ยินดีต้อนรับ!', text: res.message, icon: 'success', confirmButtonColor: '#ff69b4' });
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message, 'error');
+            }
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'ยืนยันการออกจากระบบ?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ff69b4',
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('user_session');
+                    currentUser = null;
+                    updateUI();
+                    showView('home');
+                }
+            });
+        }
+
+        // --- 5. ระบบเติมเงิน (Topup) ---
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function handleTopup(e) {
+            e.preventDefault();
+            if(!showLoading()) return;
+
+            const file = document.getElementById('topup-slip').files[0];
+            const amount = document.getElementById('topup-amount').value;
+            const last6 = document.getElementById('topup-last6').value.toUpperCase();
+            
+            const base64Img = await getBase64(file);
+
+            const res = await fetchGAS({
+                action: 'topup',
+                userid: currentUser.userid,
+                amount: amount,
+                last6: last6,
+                image: base64Img
+            });
+
+            hideLoading();
+            if(res.status === 'success') {
+                currentUser.balance = res.newBalance;
+                localStorage.setItem('user_session', JSON.stringify(currentUser));
+                updateUI();
+                document.getElementById('topup-form').reset();
+                Swal.fire('สำเร็จ!', res.message, 'success');
+            } else {
+                Swal.fire('ไม่สำเร็จ', res.message, 'error');
+            }
+        }
+
+        // --- 6. โหลดข้อมูลเริ่มต้นและ UI Updates ---
+        function updateUI() {
+            if(currentUser) {
+                document.getElementById('btn-login-nav').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('display-user').innerText = currentUser.userid;
+                document.getElementById('display-balance').innerText = parseFloat(currentUser.balance).toFixed(2);
+                document.getElementById('btn-logout').classList.remove('hidden');
+                
+                if(currentUser.role === 'admin') {
+                    document.getElementById('btn-admin-nav').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('btn-login-nav').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('btn-logout').classList.add('hidden');
+                document.getElementById('btn-admin-nav').classList.add('hidden');
+            }
+        }
+
+        function rotateBanner() {
+            if(banners.length > 1) {
+                bannerIndex = (bannerIndex + 1) % banners.length;
+                const imgEl = document.getElementById('banner-img');
+                imgEl.style.opacity = 0;
+                setTimeout(() => {
+                    imgEl.src = banners[bannerIndex];
+                    imgEl.style.opacity = 1;
+                }, 500);
+            }
+        }
+
+        // ฟังก์ชันเมื่อเปิดเว็บครั้งแรก
+        window.onload = () => {
+            updateUI();
+            
+            // Show Initial Popup (Mock)
+            if(!sessionStorage.getItem('popupShown')) {
+                setTimeout(() => {
+                    Swal.fire({
+                        title: '<h3 class="text-pastel-600 font-bold">ยินดีต้อนรับสู่ร้าน!</h3>',
+                        html: '<p class="text-gray-600">พบกับสินค้าและโปรโมชั่นมากมายที่นี่เลยค่ะ 💖</p>',
+                        imageUrl: 'https://via.placeholder.com/300x200?text=Promotion',
+                        imageWidth: 300,
+                        imageAlt: 'Popup',
+                        confirmButtonText: 'รับทราบ!',
+                        confirmButtonColor: '#ff69b4',
+                        background: '#fff0f5'
+                    });
+                    sessionStorage.setItem('popupShown', 'true');
+                }, 1000);
+            }
+
+            // Set Banner Slider
+            banners = [
+                'https://via.placeholder.com/1200x400/ffb6c1/ffffff?text=Banner+1',
+                'https://via.placeholder.com/1200x400/ff69b4/ffffff?text=Banner+2'
+            ];
+            setInterval(rotateBanner, 5000);
+        };
+    </script>
+</body>
+</html>
